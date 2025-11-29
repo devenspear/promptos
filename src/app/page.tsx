@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { PromptCard } from '@/components/prompt-card';
 import { MODEL_LABELS, ModelKey } from '@/lib/meta-prompts';
+import { ProjectFooter } from '@/components/project-footer';
 
 interface Prompts {
   claude: string;
@@ -177,8 +178,8 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950">
-      <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex flex-col">
+      <div className="mx-auto max-w-6xl px-4 py-8 flex-1">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4">
@@ -281,6 +282,11 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      <ProjectFooter
+        projectName="PromptOS"
+        githubRepo="devenspear/promptos"
+      />
     </div>
   );
 }
