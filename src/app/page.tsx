@@ -138,10 +138,10 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent mb-2">
-              PromptOS
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Deven&apos;s Prompt OS
             </h1>
-            <p className="text-zinc-500">Enter password to continue</p>
+            <p className="text-white">Enter password to continue</p>
           </div>
 
           <form onSubmit={handleLogin}>
@@ -181,10 +181,10 @@ export default function Home() {
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent mb-4">
-            PromptOS
+          <h1 className="text-5xl font-bold text-white mb-4">
+            Deven&apos;s Prompt OS
           </h1>
-          <p className="text-zinc-400 text-lg max-w-xl mx-auto">
+          <p className="text-white text-lg max-w-xl mx-auto">
             Transform your vague ideas into perfectly crafted prompts for every major LLM
           </p>
         </div>
@@ -197,10 +197,17 @@ export default function Home() {
               <Textarea
                 ref={textareaRef}
                 value={intent}
-                onChange={(e) => setIntent(e.target.value)}
+                onChange={(e) => {
+                  setIntent(e.target.value);
+                  // Auto-resize textarea
+                  if (textareaRef.current) {
+                    textareaRef.current.style.height = 'auto';
+                    textareaRef.current.style.height = Math.max(120, textareaRef.current.scrollHeight) + 'px';
+                  }
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder="Describe what you need... (e.g., 'a python script to scrape amazon prices')"
-                className="min-h-[120px] bg-transparent border-0 text-white placeholder:text-zinc-500 text-lg resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="min-h-[120px] bg-transparent border-0 text-white placeholder:text-zinc-400 text-lg resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
               <div className="flex items-center justify-between pt-2 px-2">
                 <span className="text-xs text-zinc-500">
@@ -252,22 +259,23 @@ export default function Home() {
         {!prompts && !loading && (
           <div className="text-center py-16">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
-              {(Object.keys(MODEL_LABELS) as ModelKey[]).map((key) => {
+              {(Object.keys(MODEL_LABELS) as ModelKey[]).map((key, index) => {
                 const model = MODEL_LABELS[key];
                 return (
                   <div
                     key={key}
-                    className={`${model.bgColor} ${model.borderColor} border rounded-xl p-4 opacity-50`}
+                    className={`${model.bgColor} ${model.borderColor} border-2 rounded-xl p-4 animate-pulse`}
+                    style={{ animationDelay: `${index * 0.15}s`, animationDuration: '2s' }}
                   >
-                    <span className={`bg-gradient-to-r ${model.color} bg-clip-text text-transparent font-bold`}>
+                    <span className={`bg-gradient-to-r ${model.color} bg-clip-text text-transparent font-bold text-lg`}>
                       {model.name}
                     </span>
-                    <p className="text-xs text-zinc-500 mt-1">{model.company}</p>
+                    <p className="text-xs text-zinc-300 mt-1">{model.company}</p>
                   </div>
                 );
               })}
             </div>
-            <p className="text-zinc-500">
+            <p className="text-white">
               Enter your idea above to generate optimized prompts for all four models
             </p>
           </div>
