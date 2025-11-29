@@ -10,7 +10,10 @@
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
     "version:major": "npm version major --no-git-tag-version",
-    "deploy": "npm run version:patch && git add package.json && git commit -m 'bump version' && git push && vercel --prod --yes"
+    "deploy": "npm run version:patch && git add package.json && git commit -m 'bump version' && git push && vercel --prod --yes",
+    "tauri:dev": "TAURI_BUILD=true tauri dev",
+    "tauri:build": "TAURI_BUILD=true tauri build",
+    "tauri:build:mac": "TAURI_BUILD=true tauri build --target universal-apple-darwin"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
@@ -24,6 +27,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/cli": "^2.9.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

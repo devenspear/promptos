@@ -119,6 +119,15 @@ export default function Home() {
     }
   };
 
+  // Clear results and start fresh
+  const handleClear = () => {
+    setPrompts(null);
+    setIntent('');
+    setError('');
+    setExpandedCard(null);
+    textareaRef.current?.focus();
+  };
+
   // Loading state while checking auth
   if (isAuthenticated === null) {
     return (
@@ -174,6 +183,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen min-h-[100dvh] bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex flex-col safe-area-inset">
+
       <div className="mx-auto max-w-6xl px-3 sm:px-4 py-4 sm:py-8 flex-1 w-full">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-12">
@@ -210,23 +220,38 @@ export default function Home() {
                 <span className="text-xs sm:text-sm text-zinc-500 hidden sm:block">
                   Press <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">Cmd</kbd> + <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">Enter</kbd> to generate
                 </span>
-                <Button
-                  type="submit"
-                  disabled={loading || !intent.trim()}
-                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-4 sm:px-6 py-3 sm:py-2 text-base sm:text-lg touch-target w-full sm:w-auto"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <div className="flex gap-2 w-full sm:w-auto">
+                  {prompts && (
+                    <Button
+                      type="button"
+                      onClick={handleClear}
+                      variant="outline"
+                      className="border-zinc-600 text-zinc-300 hover:text-white hover:border-zinc-500 font-semibold px-4 sm:px-6 py-3 sm:py-2 text-base sm:text-lg touch-target flex-1 sm:flex-none"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
-                      Generating...
-                    </span>
-                  ) : (
-                    'Generate Prompts'
+                      Start Over
+                    </Button>
                   )}
-                </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading || !intent.trim()}
+                    className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-4 sm:px-6 py-3 sm:py-2 text-base sm:text-lg touch-target flex-1 sm:flex-none"
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Generating...
+                      </span>
+                    ) : (
+                      'Generate Prompts'
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
