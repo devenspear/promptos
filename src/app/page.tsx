@@ -41,17 +41,9 @@ export default function Home() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ intent: 'test' }),
-      });
-
-      if (response.status === 401) {
-        setIsAuthenticated(false);
-      } else {
-        setIsAuthenticated(true);
-      }
+      const response = await fetch('/api/auth/check');
+      const data = await response.json();
+      setIsAuthenticated(data.authenticated);
     } catch {
       setIsAuthenticated(false);
     }
