@@ -66,26 +66,35 @@ const BACKGROUND_PRESETS = [
 ];
 
 // Helper to generate background style from settings
-function getBackgroundStyle(bg: BackgroundSettings): React.CSSProperties {
-  const alpha = bg.opacity / 100;
+function getBackgroundStyle(bg: BackgroundSettings | undefined): React.CSSProperties {
+  // Use defaults if bg is undefined
+  const background = bg || DEFAULT_BACKGROUND;
+  const alpha = background.opacity / 100;
 
   // Convert hex to rgba
   const hexToRgba = (hex: string, a: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${a})`;
+    try {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    } catch {
+      return `rgba(9, 9, 11, ${a})`; // fallback to zinc-950
+    }
   };
 
-  if (bg.type === 'solid') {
-    return { backgroundColor: hexToRgba(bg.color1, alpha) };
-  } else if (bg.type === 'gradient-linear') {
+  const color1 = background.color1 || '#09090b';
+  const color2 = background.color2 || '#18181b';
+
+  if (background.type === 'solid') {
+    return { backgroundColor: hexToRgba(color1, alpha) };
+  } else if (background.type === 'gradient-linear') {
     return {
-      background: `linear-gradient(to bottom, ${hexToRgba(bg.color1, alpha)}, ${hexToRgba(bg.color2, alpha)})`,
+      background: `linear-gradient(to bottom, ${hexToRgba(color1, alpha)}, ${hexToRgba(color2, alpha)})`,
     };
   } else {
     return {
-      background: `radial-gradient(ellipse at center, ${hexToRgba(bg.color1, alpha)}, ${hexToRgba(bg.color2, alpha)})`,
+      background: `radial-gradient(ellipse at center, ${hexToRgba(color1, alpha)}, ${hexToRgba(color2, alpha)})`,
     };
   }
 }
@@ -122,7 +131,16 @@ export default function DesktopHome() {
     if (storedSettings) {
       try {
         const parsed = JSON.parse(storedSettings);
-        setSettings({ ...DEFAULT_SETTINGS, ...parsed });
+        // Deep merge background settings to handle old stored settings without background
+        const mergedSettings: AppSettings = {
+          ...DEFAULT_SETTINGS,
+          ...parsed,
+          background: {
+            ...DEFAULT_BACKGROUND,
+            ...(parsed.background || {}),
+          },
+        };
+        setSettings(mergedSettings);
         setShowAllInfo(parsed.showFormatInfo ?? true);
       } catch (e) {
         console.error('Failed to parse settings:', e);
@@ -499,13 +517,28 @@ export default function DesktopHome() {
                   {/* Divider */}
                   <div className="border-t border-zinc-700 my-6" />
 
-                  <Button
-                    type="submit"
-                    disabled={!apiKeyInput.trim()}
-                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold py-3 text-base"
-                  >
-                    Save Settings
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        // Reset all settings to defaults
+                        localStorage.removeItem(SETTINGS_STORAGE);
+                        setSettings(DEFAULT_SETTINGS);
+                        setShowAllInfo(DEFAULT_SETTINGS.showFormatInfo);
+                      }}
+                      className="flex-1 border-zinc-600 text-zinc-300 hover:text-white hover:border-zinc-500 font-semibold py-3 text-base"
+                    >
+                      Reset Defaults
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={!apiKeyInput.trim()}
+                      className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold py-3 text-base"
+                    >
+                      Save Settings
+                    </Button>
+                  </div>
                 </div>
               </div>
             </form>

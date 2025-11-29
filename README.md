@@ -35,6 +35,11 @@ Each prompt follows the best practices and formatting preferences for its target
   - Default model preference
   - Auto-copy generated prompts
   - Toggle format info display
+  - **Background customization**: solid colors, linear/radial gradients
+  - **6 preset color themes**: Default Dark, Deep Purple, Ocean Blue, Forest Green, Warm Ember, Midnight
+  - **Custom color pickers** with hex input
+  - **Window transparency** slider (see your desktop through the app)
+  - Reset to defaults button
 - Lightweight and fast (~10MB app size)
 - Works offline once API key is configured
 
