@@ -25,17 +25,70 @@ interface UsageStats {
 const API_KEY_STORAGE = 'promptos_api_key';
 const SETTINGS_STORAGE = 'promptos_settings';
 
+type BackgroundType = 'solid' | 'gradient-linear' | 'gradient-radial';
+
+interface BackgroundSettings {
+  type: BackgroundType;
+  color1: string;
+  color2: string;
+  opacity: number; // 0-100
+}
+
 interface AppSettings {
   defaultModel: ModelKey;
   autoCopyModel: ModelKey | null;
   showFormatInfo: boolean;
+  background: BackgroundSettings;
 }
+
+const DEFAULT_BACKGROUND: BackgroundSettings = {
+  type: 'gradient-linear',
+  color1: '#09090b', // zinc-950
+  color2: '#18181b', // zinc-900
+  opacity: 100,
+};
 
 const DEFAULT_SETTINGS: AppSettings = {
   defaultModel: 'claude',
   autoCopyModel: null,
   showFormatInfo: true,
+  background: DEFAULT_BACKGROUND,
 };
+
+// Preset background options
+const BACKGROUND_PRESETS = [
+  { name: 'Default Dark', color1: '#09090b', color2: '#18181b' },
+  { name: 'Deep Purple', color1: '#1e1033', color2: '#0f0a1a' },
+  { name: 'Ocean Blue', color1: '#0c1929', color2: '#0a1420' },
+  { name: 'Forest Green', color1: '#0a1f1a', color2: '#051210' },
+  { name: 'Warm Ember', color1: '#1f1410', color2: '#120a08' },
+  { name: 'Midnight', color1: '#0a0a0f', color2: '#000000' },
+];
+
+// Helper to generate background style from settings
+function getBackgroundStyle(bg: BackgroundSettings): React.CSSProperties {
+  const alpha = bg.opacity / 100;
+
+  // Convert hex to rgba
+  const hexToRgba = (hex: string, a: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  };
+
+  if (bg.type === 'solid') {
+    return { backgroundColor: hexToRgba(bg.color1, alpha) };
+  } else if (bg.type === 'gradient-linear') {
+    return {
+      background: `linear-gradient(to bottom, ${hexToRgba(bg.color1, alpha)}, ${hexToRgba(bg.color2, alpha)})`,
+    };
+  } else {
+    return {
+      background: `radial-gradient(ellipse at center, ${hexToRgba(bg.color1, alpha)}, ${hexToRgba(bg.color2, alpha)})`,
+    };
+  }
+}
 
 export default function DesktopHome() {
   const [intent, setIntent] = useState('');
@@ -160,17 +213,20 @@ export default function DesktopHome() {
     }
   };
 
+  // Get background style from settings
+  const backgroundStyle = getBackgroundStyle(settings.background);
+
   // Show loading while initializing
   if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={backgroundStyle}>
         <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={backgroundStyle}>
       {/* Top Bar with Settings */}
       <div className="flex justify-end items-center px-4 py-2 gap-2">
         <Button
@@ -305,6 +361,139 @@ export default function DesktopHome() {
                       />
                       <span className="text-zinc-300 text-sm">Show format info by default</span>
                     </label>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-zinc-700 my-6" />
+
+                  {/* Background Settings Section */}
+                  <h3 className="text-white font-semibold mb-4">Background</h3>
+
+                  {/* Background Type */}
+                  <div className="mb-4">
+                    <label className="block text-zinc-400 text-sm mb-2">Style</label>
+                    <select
+                      value={settings.background.type}
+                      onChange={(e) =>
+                        updateSettings({
+                          background: { ...settings.background, type: e.target.value as BackgroundType },
+                        })
+                      }
+                      className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                    >
+                      <option value="solid">Solid Color</option>
+                      <option value="gradient-linear">Linear Gradient</option>
+                      <option value="gradient-radial">Radial Gradient</option>
+                    </select>
+                  </div>
+
+                  {/* Preset Colors */}
+                  <div className="mb-4">
+                    <label className="block text-zinc-400 text-sm mb-2">Presets</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {BACKGROUND_PRESETS.map((preset) => (
+                        <button
+                          key={preset.name}
+                          type="button"
+                          onClick={() =>
+                            updateSettings({
+                              background: {
+                                ...settings.background,
+                                color1: preset.color1,
+                                color2: preset.color2,
+                              },
+                            })
+                          }
+                          className="p-2 rounded-lg border border-zinc-600 hover:border-zinc-400 transition-colors"
+                          style={{
+                            background: `linear-gradient(135deg, ${preset.color1}, ${preset.color2})`,
+                          }}
+                          title={preset.name}
+                        >
+                          <span className="text-xs text-white/70">{preset.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Custom Colors */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-zinc-400 text-sm mb-2">
+                        {settings.background.type === 'solid' ? 'Color' : 'Color 1'}
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={settings.background.color1}
+                          onChange={(e) =>
+                            updateSettings({
+                              background: { ...settings.background, color1: e.target.value },
+                            })
+                          }
+                          className="w-12 h-10 rounded cursor-pointer border-0 bg-transparent"
+                        />
+                        <input
+                          type="text"
+                          value={settings.background.color1}
+                          onChange={(e) =>
+                            updateSettings({
+                              background: { ...settings.background, color1: e.target.value },
+                            })
+                          }
+                          className="flex-1 bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                        />
+                      </div>
+                    </div>
+                    {settings.background.type !== 'solid' && (
+                      <div>
+                        <label className="block text-zinc-400 text-sm mb-2">Color 2</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.background.color2}
+                            onChange={(e) =>
+                              updateSettings({
+                                background: { ...settings.background, color2: e.target.value },
+                              })
+                            }
+                            className="w-12 h-10 rounded cursor-pointer border-0 bg-transparent"
+                          />
+                          <input
+                            type="text"
+                            value={settings.background.color2}
+                            onChange={(e) =>
+                              updateSettings({
+                                background: { ...settings.background, color2: e.target.value },
+                              })
+                            }
+                            className="flex-1 bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Transparency Slider */}
+                  <div className="mb-6">
+                    <label className="block text-zinc-400 text-sm mb-2">
+                      Transparency: {100 - settings.background.opacity}%
+                    </label>
+                    <input
+                      type="range"
+                      min="20"
+                      max="100"
+                      value={settings.background.opacity}
+                      onChange={(e) =>
+                        updateSettings({
+                          background: { ...settings.background, opacity: parseInt(e.target.value) },
+                        })
+                      }
+                      className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                    />
+                    <p className="text-zinc-500 text-xs mt-1">
+                      Lower values make the window more transparent
+                    </p>
                   </div>
 
                   {/* Divider */}

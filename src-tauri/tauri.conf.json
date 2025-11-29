@@ -21,7 +21,8 @@
         "resizable": true,
         "fullscreen": false,
         "center": true,
-        "url": "/desktop.html"
+        "url": "/desktop.html",
+        "transparent": true
       }
     ],
     "security": {
