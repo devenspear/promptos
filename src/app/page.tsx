@@ -131,36 +131,36 @@ export default function Home() {
   // Login screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center px-4">
+      <div className="min-h-screen min-h-[100dvh] bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center px-4 safe-area-inset">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
               Deven&apos;s Prompt OS
             </h1>
-            <p className="text-white">Enter password to continue</p>
+            <p className="text-white text-base sm:text-lg">Enter password to continue</p>
           </div>
 
           <form onSubmit={handleLogin}>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-green-500/20 to-purple-500/20 rounded-2xl blur-xl" />
-              <div className="relative bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 rounded-2xl p-6">
+              <div className="relative bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 rounded-2xl p-4 sm:p-6">
                 <input
                   ref={passwordRef}
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 mb-4"
+                  className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-4 py-3 sm:py-4 text-white text-base placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 mb-4"
                 />
 
                 {authError && (
-                  <p className="text-red-400 text-sm mb-4 text-center">{authError}</p>
+                  <p className="text-red-400 text-sm sm:text-base mb-4 text-center">{authError}</p>
                 )}
 
                 <Button
                   type="submit"
                   disabled={authLoading || !password}
-                  className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold py-3"
+                  className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold py-3 sm:py-4 text-base sm:text-lg touch-target"
                 >
                   {authLoading ? 'Authenticating...' : 'Enter'}
                 </Button>
@@ -173,24 +173,24 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex flex-col">
-      <div className="mx-auto max-w-6xl px-4 py-8 flex-1">
+    <div className="min-h-screen min-h-[100dvh] bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex flex-col safe-area-inset">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 py-4 sm:py-8 flex-1 w-full">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-6 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-4">
             Deven&apos;s Prompt OS
           </h1>
-          <p className="text-white text-lg max-w-xl mx-auto mb-6">
+          <p className="text-white text-base sm:text-lg md:text-xl max-w-xl mx-auto mb-4 sm:mb-6 px-2">
             Transform your vague ideas into perfectly crafted prompts for every major LLM
           </p>
           <UsageDisplay />
         </div>
 
         {/* Input Section */}
-        <form onSubmit={handleSubmit} className="mb-12">
+        <form onSubmit={handleSubmit} className="mb-6 sm:mb-12">
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-green-500/20 to-purple-500/20 rounded-2xl blur-xl" />
-            <div className="relative bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 rounded-2xl p-2">
+            <div className="relative bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 rounded-xl sm:rounded-2xl p-2 sm:p-3">
               <Textarea
                 ref={textareaRef}
                 value={intent}
@@ -199,25 +199,25 @@ export default function Home() {
                   // Auto-resize textarea
                   if (textareaRef.current) {
                     textareaRef.current.style.height = 'auto';
-                    textareaRef.current.style.height = Math.max(120, textareaRef.current.scrollHeight) + 'px';
+                    textareaRef.current.style.height = Math.max(100, textareaRef.current.scrollHeight) + 'px';
                   }
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Describe what you need... (e.g., 'a python script to scrape amazon prices')"
-                className="min-h-[120px] bg-transparent border-0 text-white placeholder:text-zinc-400 text-lg resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                placeholder="Describe what you need..."
+                className="min-h-[100px] sm:min-h-[120px] bg-transparent border-0 text-white placeholder:text-zinc-400 text-base sm:text-lg md:text-xl resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
-              <div className="flex items-center justify-between pt-2 px-2">
-                <span className="text-xs text-zinc-500">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0 pt-2 px-1 sm:px-2">
+                <span className="text-xs sm:text-sm text-zinc-500 hidden sm:block">
                   Press <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">Cmd</kbd> + <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">Enter</kbd> to generate
                 </span>
                 <Button
                   type="submit"
                   disabled={loading || !intent.trim()}
-                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-6"
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-4 sm:px-6 py-3 sm:py-2 text-base sm:text-lg touch-target w-full sm:w-auto"
                 >
                   {loading ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
@@ -243,19 +243,19 @@ export default function Home() {
         {prompts && (
           <>
             {/* Global Info Toggle */}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-3 sm:mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAllInfo(!showAllInfo)}
-                className="h-9 px-4 text-sm text-zinc-400 hover:text-white border-zinc-700 hover:border-zinc-500"
+                className="h-10 sm:h-9 px-4 sm:px-4 text-sm sm:text-base text-zinc-400 hover:text-white border-zinc-700 hover:border-zinc-500 touch-target"
               >
                 {showAllInfo ? 'Hide All Format Info' : 'Show All Format Info'}
               </Button>
             </div>
 
             {/* Cards Grid */}
-            <div className={`grid gap-6 animate-in fade-in duration-500 ${
+            <div className={`grid gap-3 sm:gap-6 animate-in fade-in duration-500 ${
               expandedCard
                 ? 'grid-cols-1'
                 : 'grid-cols-1 md:grid-cols-2'
@@ -281,25 +281,25 @@ export default function Home() {
 
         {/* Empty State */}
         {!prompts && !loading && (
-          <div className="text-center py-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
+          <div className="text-center py-8 sm:py-16">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl sm:max-w-2xl mx-auto mb-6 sm:mb-8">
               {(Object.keys(MODEL_LABELS) as ModelKey[]).map((key, index) => {
                 const model = MODEL_LABELS[key];
                 return (
                   <div
                     key={key}
-                    className={`${model.bgColor} ${model.borderColor} border-2 rounded-xl p-4 animate-pulse`}
+                    className={`${model.bgColor} ${model.borderColor} border-2 rounded-xl p-3 sm:p-4 animate-pulse`}
                     style={{ animationDelay: `${index * 0.15}s`, animationDuration: '2s' }}
                   >
-                    <span className={`bg-gradient-to-r ${model.color} bg-clip-text text-transparent font-bold text-lg`}>
+                    <span className={`bg-gradient-to-r ${model.color} bg-clip-text text-transparent font-bold text-base sm:text-lg md:text-xl`}>
                       {model.name}
                     </span>
-                    <p className="text-xs text-zinc-300 mt-1">{model.company}</p>
+                    <p className="text-xs sm:text-sm text-zinc-300 mt-1">{model.company}</p>
                   </div>
                 );
               })}
             </div>
-            <p className="text-white">
+            <p className="text-white text-sm sm:text-base md:text-lg px-4">
               Enter your idea above to generate optimized prompts for all four models
             </p>
           </div>
