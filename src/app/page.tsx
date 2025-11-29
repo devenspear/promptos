@@ -24,6 +24,8 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [showAllInfo, setShowAllInfo] = useState(true); // Default ON
+  const [expandedCard, setExpandedCard] = useState<ModelKey | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -239,15 +241,42 @@ export default function Home() {
 
         {/* Results Grid */}
         {prompts && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500">
-            {(Object.keys(MODEL_LABELS) as ModelKey[]).map((key) => (
-              <PromptCard
-                key={key}
-                modelKey={key}
-                prompt={prompts[key]}
-              />
-            ))}
-          </div>
+          <>
+            {/* Global Info Toggle */}
+            <div className="flex justify-center mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAllInfo(!showAllInfo)}
+                className="h-9 px-4 text-sm text-zinc-400 hover:text-white border-zinc-700 hover:border-zinc-500"
+              >
+                {showAllInfo ? 'Hide All Format Info' : 'Show All Format Info'}
+              </Button>
+            </div>
+
+            {/* Cards Grid */}
+            <div className={`grid gap-6 animate-in fade-in duration-500 ${
+              expandedCard
+                ? 'grid-cols-1'
+                : 'grid-cols-1 md:grid-cols-2'
+            }`}>
+              {(Object.keys(MODEL_LABELS) as ModelKey[]).map((key) => {
+                // If a card is expanded, only show that card
+                if (expandedCard && expandedCard !== key) return null;
+
+                return (
+                  <PromptCard
+                    key={key}
+                    modelKey={key}
+                    prompt={prompts[key]}
+                    showInfo={showAllInfo}
+                    isExpanded={expandedCard === key}
+                    onExpand={() => setExpandedCard(expandedCard === key ? null : key)}
+                  />
+                );
+              })}
+            </div>
+          </>
         )}
 
         {/* Empty State */}
