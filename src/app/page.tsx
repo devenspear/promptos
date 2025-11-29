@@ -18,11 +18,70 @@ export default function Home() {
   const [prompts, setPrompts] = useState<Prompts | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    textareaRef.current?.focus();
+    // Check if already authenticated by trying to hit an API
+    checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      textareaRef.current?.focus();
+    } else if (isAuthenticated === false) {
+      passwordRef.current?.focus();
+    }
+  }, [isAuthenticated]);
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ intent: 'test' }),
+      });
+
+      if (response.status === 401) {
+        setIsAuthenticated(false);
+      } else {
+        setIsAuthenticated(true);
+      }
+    } catch {
+      setIsAuthenticated(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError('');
+
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsAuthenticated(true);
+        setPassword('');
+      } else {
+        setAuthError('Invalid password');
+      }
+    } catch {
+      setAuthError('Authentication failed');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +100,11 @@ export default function Home() {
 
       const data = await response.json();
 
+      if (response.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate prompts');
       }
@@ -58,6 +122,59 @@ export default function Home() {
       handleSubmit(e);
     }
   };
+
+  // Loading state while checking auth
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Login screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent mb-2">
+              PromptOS
+            </h1>
+            <p className="text-zinc-500">Enter password to continue</p>
+          </div>
+
+          <form onSubmit={handleLogin}>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-green-500/20 to-purple-500/20 rounded-2xl blur-xl" />
+              <div className="relative bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 rounded-2xl p-6">
+                <input
+                  ref={passwordRef}
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 mb-4"
+                />
+
+                {authError && (
+                  <p className="text-red-400 text-sm mb-4 text-center">{authError}</p>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={authLoading || !password}
+                  className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold py-3"
+                >
+                  {authLoading ? 'Authenticating...' : 'Enter'}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950">
