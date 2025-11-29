@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PromptCard } from '@/components/prompt-card';
 import { MODEL_LABELS, ModelKey } from '@/lib/meta-prompts';
 import { ProjectFooter } from '@/components/project-footer';
+import { UsageDisplay } from '@/components/usage-display';
 
 interface Prompts {
   claude: string;
@@ -177,9 +178,10 @@ export default function Home() {
           <h1 className="text-5xl font-bold text-white mb-4">
             Deven&apos;s Prompt OS
           </h1>
-          <p className="text-white text-lg max-w-xl mx-auto">
+          <p className="text-white text-lg max-w-xl mx-auto mb-6">
             Transform your vague ideas into perfectly crafted prompts for every major LLM
           </p>
+          <UsageDisplay />
         </div>
 
         {/* Input Section */}
