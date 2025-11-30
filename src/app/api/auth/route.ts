@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Secondary access password
+const SECONDARY_PASSWORD = 'Pa$$2025';
+
 export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json();
-    const correctPassword = process.env.ACCESS_PASSWORD;
+    const primaryPassword = process.env.ACCESS_PASSWORD;
 
-    if (!correctPassword) {
-      // If no password is set, allow access
+    if (!primaryPassword) {
+      // If no primary password is set, allow access
       return NextResponse.json({ success: true });
     }
 
-    if (password === correctPassword) {
+    // Accept either the primary password OR the secondary password
+    if (password === primaryPassword || password === SECONDARY_PASSWORD) {
       const response = NextResponse.json({ success: true });
       response.cookies.set('promptos_auth', 'authenticated', {
         httpOnly: true,
